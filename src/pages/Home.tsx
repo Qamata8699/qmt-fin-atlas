@@ -127,8 +127,9 @@ export default function Home() {
               </span>
             </h1>
             <p className="mt-5 max-w-xl text-base text-slate-400 sm:text-lg">
-              Profitability, cash position, revenue trends, DCF benchmarks, M&amp;A news and
-              beneficial-ownership maps — in one search.
+              Type a company, get the full picture — is it profitable, is it drowning in debt,
+              what's it actually worth, who's buying who, and which giants quietly own the stock.
+              No jargon walls, we translate as we go.
             </p>
             <div className="mt-9 flex w-full justify-center px-2">
               <SearchBar large onSelect={openCompany} />
@@ -149,14 +150,14 @@ export default function Home() {
                 onClick={() => setView("deals")}
                 className="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-6 py-2.5 text-sm font-medium text-emerald-300 transition hover:bg-emerald-500/20"
               >
-                Visit the Deal Room — storyboards of M&amp;A wins, near-misses &amp; live situations
+                Visit the Deal Room — the M&amp;A tea: done deals, live situations &amp; legendary fumbles
               </button>
             </div>
             <div className="mt-16 grid w-full grid-cols-1 gap-4 sm:grid-cols-3">
               {[
-                { icon: Activity, t: "Fundamentals", d: "Margins, returns, cash flow and balance-sheet strength at a glance." },
-                { icon: TrendingUp, t: "DCF benchmark", d: "Transparent 5-year DCF with stated assumptions vs. live price." },
-                { icon: Landmark, t: "Ownership maps", d: "See which institutions and funds — Vanguard, BlackRock & peers — sit on the register." },
+                { icon: Activity, t: "Fundamentals", d: "Margins, returns, cash and debt — is the business actually healthy, in plain terms." },
+                { icon: TrendingUp, t: "DCF benchmark", d: "What the future cash flows are worth today vs what the market is charging. Every assumption spelled out." },
+                { icon: Landmark, t: "Ownership maps", d: "See who's really on the register — the Vanguards and BlackRocks whose moves quietly shift prices." },
               ].map((f) => (
                 <div key={f.t} className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 text-left">
                   <f.icon className="h-6 w-6 text-emerald-400" />
@@ -186,8 +187,9 @@ export default function Home() {
 
             {overview.isError && (
               <div className="mt-10 rounded-xl border border-rose-400/20 bg-rose-500/5 p-6 text-sm text-rose-300">
-                Could not load data for {sel.symbol}. The free data feed may be rate-limited or may not
-                cover this listing — try again in a moment, or pick another ticker.
+                Couldn't pull the data for {sel.symbol} — the free feed is probably rate-limited
+                right now, or it doesn't cover this listing. Give it a few seconds and try again,
+                or grab another ticker.
               </div>
             )}
 
@@ -250,7 +252,7 @@ export default function Home() {
                     ) : dcf.data ? (
                       <DcfTab dcf={dcf.data} cur={cur} rate={rate} />
                     ) : (
-                      <p className="text-sm text-slate-400">Unable to compute DCF right now.</p>
+                      <p className="text-sm text-slate-400">Can't run the DCF right now — the free feed didn't give us enough cash-flow history. Try again shortly.</p>
                     ))}
                   {tab === "M&A News" &&
                     (news.isLoading ? (
@@ -258,7 +260,7 @@ export default function Home() {
                     ) : news.data ? (
                       <NewsTab news={news.data} />
                     ) : (
-                      <p className="text-sm text-slate-400">Unable to load news right now.</p>
+                      <p className="text-sm text-slate-400">No news coming through right now — the feed's probably rate-limited. Give it a moment.</p>
                     ))}
                   {tab === "Ownership" &&
                     (ownership.isLoading ? (
@@ -266,7 +268,7 @@ export default function Home() {
                     ) : ownership.data ? (
                       <OwnershipTab data={ownership.data} symbol={o.symbol} currency={cur} rate={rate} />
                     ) : (
-                      <p className="text-sm text-slate-400">Unable to load ownership data right now.</p>
+                      <p className="text-sm text-slate-400">Ownership data isn't coming through right now — try again in a moment.</p>
                     ))}
                 </div>
               </>
