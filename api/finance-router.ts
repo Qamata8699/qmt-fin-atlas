@@ -4,6 +4,7 @@ import { edgarSearch, edgarOverview, edgarDcf, edgarOwnership, edgarNews } from 
 import { searchDirectory } from "./jse-directory";
 import { mansaAvailable, mansaOverview, mansaSearch } from "./mansa";
 import { twelveDataAvailable, twelveDataOverview, twelveDataSearch } from "./twelvedata";
+import { mergeSeed, seedAvailable, seedDcf, seedEntry } from "./jse-seed";
 
 const isUsTicker = (s: string) => !s.includes(".");
 
@@ -222,11 +223,25 @@ export const financeRouter = createRouter({
       if (mansaAvailable(input.symbol)) {
         try {
           const m = await mansaOverview(input.symbol);
-          overviewCache.set(input.symbol.toUpperCase(), { at: Date.now(), data: m });
-          return m;
+          const merged = mergeSeed(m, input.symbol); // seed fills fundamentals Mansa doesn't carry
+          overviewCache.set(input.symbol.toUpperCase(), { at: Date.now(), data: merged });
+          return merged;
         } catch {
-          /* Mansa down too — try Twelve Data */
+          /* Mansa down too — try the seed snapshot directly */
         }
+      }
+      // Seed-only fallback: fundamentals without a live price.
+      if (seedAvailable(input.symbol)) {
+        const seeded = mergeSeed(
+          {
+            symbol: input.symbol, name: input.symbol, exchange: "JSE", currency: "ZAR",
+            price: null, marketCap: null, sector: null, industry: null, website: null,
+            longBusinessSummary: null, beta: null, source: "offline snapshot",
+          },
+          input.symbol
+        );
+        overviewCache.set(input.symbol.toUpperCase(), { at: Date.now(), data: seeded });
+        return seeded;
       }
       // 2) Twelve Data for any market — dormant until a key is set.
       if (twelveDataAvailable()) {
@@ -245,8 +260,9 @@ export const financeRouter = createRouter({
     }
   }),
 
-  ownership: publicQuery.input(z.object({ symbol: z.string() })).query(({ input }) =>
-    withEdgarFallback(input.symbol, async () => {
+  ownership: publicQuery.input(z.object({ symbol: z.string() })).query(async ({ input }) => {
+    try {
+      return await withEdgarFallback(input.symbol, async () => {
     const modules = "majorHoldersBreakdown,institutionOwnership,fundOwnership,price";
     const data = await yf(
       `${YF2}/v10/finance/quoteSummary/${encodeURIComponent(input.symbol)}?modules=${modules}`
@@ -271,8 +287,27 @@ export const financeRouter = createRouter({
       institutions: (r.institutionOwnership?.ownershipList ?? []).slice(0, 10).map(mapHolder),
       funds: (r.fundOwnership?.ownershipList ?? []).slice(0, 10).map(mapHolder),
     };
-    }, () => edgarOwnership(input.symbol))
-  ),
+    }, () => edgarOwnership(input.symbol));
+    } catch (e) {
+      // Seed fallback: holder percentages from the annual snapshot (JSE).
+      const s = seedEntry(input.symbol);
+      if (s && (s.holdersSummary.insiders != null || s.holdersSummary.institutions != null)) {
+        return {
+          company: input.symbol,
+          breakdown: {
+            insiders: s.holdersSummary.insiders,
+            institutions: s.holdersSummary.institutions,
+            floatInstitutions: s.holdersSummary.floatInstitutions,
+            institutionsCount: null,
+          },
+          institutions: [],
+          funds: [],
+          note: `Holder split from annual statements snapshot (FY ending ${s.asOf}); named-holder list unavailable while the live feed is rate-limited.`,
+        };
+      }
+      throw e;
+    }
+  }),
 
   news: publicQuery
     .input(z.object({ symbol: z.string(), name: z.string().optional() }))
@@ -317,8 +352,9 @@ export const financeRouter = createRouter({
     }
   }),
 
-  dcf: publicQuery.input(z.object({ symbol: z.string() })).query(({ input }) =>
-    withEdgarFallback(input.symbol, async () => {
+  dcf: publicQuery.input(z.object({ symbol: z.string() })).query(async ({ input }) => {
+    try {
+      return await withEdgarFallback(input.symbol, async () => {
     const modules = "financialData,defaultKeyStatistics,price,cashflowStatementHistory";
     const data = await yf(
       `${YF2}/v10/finance/quoteSummary/${encodeURIComponent(input.symbol)}?modules=${modules}`
@@ -387,6 +423,25 @@ export const financeRouter = createRouter({
       assumptionsNote:
         "Benchmark DCF: base FCF = average of up to 3 most recent positive annual FCFs; growth capped to [−5%, +15%] from reported revenue growth; 10% discount rate; 2.5% terminal growth. Illustrative only — not investment advice.",
     };
-    }, () => edgarDcf(input.symbol))
-  ),
+    }, () => edgarDcf(input.symbol));
+    } catch (e) {
+      // Seed fallback for JSE tickers when Yahoo is rate-limited.
+      if (seedAvailable(input.symbol)) {
+        let livePrice: number | null = null;
+        let currency = "ZAR";
+        if (mansaAvailable(input.symbol)) {
+          try {
+            const m = await mansaOverview(input.symbol);
+            livePrice = m.price;
+            currency = m.currency ?? "ZAR";
+          } catch {
+            /* seed DCF works without a live price too */
+          }
+        }
+        const d = seedDcf(input.symbol, livePrice, currency);
+        if (d) return d;
+      }
+      throw e;
+    }
+  }),
 });
