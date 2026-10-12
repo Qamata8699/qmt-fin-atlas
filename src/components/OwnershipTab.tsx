@@ -78,9 +78,13 @@ export default function OwnershipTab({ data, symbol, currency, rate = 1 }: { dat
       </div>
 
       <div>
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-emerald-400">
-          Beneficial ownership map — top institutional holders
+        <h3 className="mb-1 text-sm font-semibold uppercase tracking-wider text-emerald-400">
+          Beneficial ownership map — who's really on the register
         </h3>
+        <p className="mb-3 text-xs text-slate-500">
+          The big institutions holding serious stakes. When names like Vanguard or BlackRock show up
+          with chunky positions, their buying and selling quietly moves the price.
+        </p>
         <div className="h-[480px] overflow-hidden rounded-xl border border-white/10 bg-slate-950/60">
           {nodes.length > 1 ? (
             <ReactFlow
