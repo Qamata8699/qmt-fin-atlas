@@ -20,8 +20,9 @@ const tooltipStyle = {
   color: "#e2e8f0",
 };
 
-export default function OverviewTab({ data }: { data: any }) {
-  const cur = data.currency;
+export default function OverviewTab({ data, cur = data.currency, rate = 1 }: { data: any; cur?: string; rate?: number }) {
+  const M = (v: number | null | undefined) => fmtMoney(v == null ? v : v * rate, cur);
+  const N = (v: number | null | undefined) => fmtNum(v == null ? v : v * rate);
   const revChart = [...(data.revenue?.history ?? [])]
     .reverse()
     .map((h: any, i: number) => ({
@@ -48,7 +49,7 @@ export default function OverviewTab({ data }: { data: any }) {
           <Stat label="Net margin" value={fmtPct(p.profitMargin)} />
           <Stat label="ROE" value={fmtPct(p.returnOnEquity)} />
           <Stat label="ROA" value={fmtPct(p.returnOnAssets)} />
-          <Stat label="EBITDA" value={fmtMoney(p.ebitda, cur)} />
+          <Stat label="EBITDA" value={M(p.ebitda)} />
         </div>
       </section>
 
@@ -57,12 +58,12 @@ export default function OverviewTab({ data }: { data: any }) {
           Cash position
         </h3>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          <Stat label="Total cash" value={fmtMoney(c.totalCash, cur)} />
-          <Stat label="Total debt" value={fmtMoney(c.totalDebt, cur)} />
-          <Stat label="Free cash flow" value={fmtMoney(c.freeCashflow, cur)} />
-          <Stat label="Operating CF" value={fmtMoney(c.operatingCashflow, cur)} />
+          <Stat label="Total cash" value={M(c.totalCash)} />
+          <Stat label="Total debt" value={M(c.totalDebt)} />
+          <Stat label="Free cash flow" value={M(c.freeCashflow)} />
+          <Stat label="Operating CF" value={M(c.operatingCashflow)} />
           <Stat label="Current ratio" value={fmtNum(c.currentRatio)} />
-          <Stat label="Cash / share" value={fmtNum(c.cashPerShare)} hint={cur} />
+          <Stat label="Cash / share" value={N(c.cashPerShare)} hint={cur} />
         </div>
       </section>
 
@@ -71,9 +72,9 @@ export default function OverviewTab({ data }: { data: any }) {
           Revenue
         </h3>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          <Stat label="Total revenue (TTM)" value={fmtMoney(data.revenue?.totalRevenue, cur)} />
+          <Stat label="Total revenue (TTM)" value={M(data.revenue?.totalRevenue)} />
           <Stat label="Revenue growth (YoY)" value={fmtPct(data.revenue?.revenueGrowth)} />
-          <Stat label="Revenue / share" value={fmtNum(data.revenue?.revenuePerShare)} hint={cur} />
+          <Stat label="Revenue / share" value={N(data.revenue?.revenuePerShare)} hint={cur} />
         </div>
         {revChart.length > 0 && (
           <div className="mt-4 h-64 rounded-xl border border-white/10 bg-white/[0.03] p-4">
@@ -84,11 +85,11 @@ export default function OverviewTab({ data }: { data: any }) {
                 <YAxis
                   stroke="#64748b"
                   fontSize={12}
-                  tickFormatter={(v: number) => fmtMoney(v, cur)}
+                  tickFormatter={(v: number) => M(v)}
                 />
                 <Tooltip
                   contentStyle={tooltipStyle}
-                  formatter={(v: number) => fmtMoney(v, cur)}
+                  formatter={(v: number) => M(v)}
                 />
                 <Legend />
                 <Bar dataKey="Revenue" fill="#10b981" radius={[6, 6, 0, 0]} />
@@ -103,8 +104,8 @@ export default function OverviewTab({ data }: { data: any }) {
               <BarChart data={fcfChart}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                 <XAxis dataKey="period" stroke="#64748b" fontSize={12} />
-                <YAxis stroke="#64748b" fontSize={12} tickFormatter={(v: number) => fmtMoney(v, cur)} />
-                <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => fmtMoney(v, cur)} />
+                <YAxis stroke="#64748b" fontSize={12} tickFormatter={(v: number) => M(v)} />
+                <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => M(v)} />
                 <Legend />
                 <Bar dataKey="FCF" name="Free cash flow" fill="#a78bfa" radius={[6, 6, 0, 0]} />
               </BarChart>

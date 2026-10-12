@@ -227,6 +227,29 @@ export const financeRouter = createRouter({
       }, () => edgarNews(input.symbol))
     ),
 
+  // ZAR per 1 unit of each currency (for the "view in Rands" toggle).
+  fx: publicQuery.query(async () => {
+    try {
+      const res = await fetch("https://open.er-api.com/v6/latest/ZAR");
+      const j: any = await res.json();
+      if (j?.result === "success" && j.rates) {
+        const out: Record<string, number> = { ZAR: 1 };
+        for (const [cur, perZar] of Object.entries(j.rates)) {
+          if (typeof perZar === "number" && perZar > 0) out[cur] = 1 / perZar;
+        }
+        if (j.rates.GBp == null && j.rates.GBP) out.GBp = out.GBP / 100; // LSE quotes in pence
+        return { rates: out, source: "exchangerate-api.com (free)", fallback: false };
+      }
+      throw new Error("bad fx response");
+    } catch {
+      return {
+        rates: { ZAR: 1, USD: 18.2, GBP: 23.1, GBp: 0.231, EUR: 19.6 },
+        source: "static fallback rates",
+        fallback: true,
+      };
+    }
+  }),
+
   dcf: publicQuery.input(z.object({ symbol: z.string() })).query(({ input }) =>
     withEdgarFallback(input.symbol, async () => {
     const modules = "financialData,defaultKeyStatistics,price,cashflowStatementHistory";
