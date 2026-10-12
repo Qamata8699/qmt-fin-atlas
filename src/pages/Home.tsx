@@ -8,6 +8,7 @@ import NewsTab from "@/components/NewsTab";
 import OwnershipTab from "@/components/OwnershipTab";
 import SaFlag from "@/components/SaFlag";
 import DealRoom from "@/components/DealRoom";
+import CasePrep from "@/components/CasePrep";
 import { fmtMoney, fmtNum } from "@/lib/format";
 
 const TABS = ["Overview", "DCF Benchmark", "M&A News", "Ownership"] as const;
@@ -23,7 +24,7 @@ export default function Home() {
   const [sel, setSel] = useState<{ symbol: string; name: string } | null>(null);
   const [tab, setTab] = useState<(typeof TABS)[number]>("Overview");
   const [zar, setZar] = useState(true);
-  const [view, setView] = useState<"search" | "deals">("search");
+  const [view, setView] = useState<"search" | "deals" | "cases">("search");
 
   const openCompany = (symbol: string, name: string) => {
     setSel({ symbol, name });
@@ -74,17 +75,17 @@ export default function Home() {
             </div>
           </button>
           <div className="flex items-center rounded-lg border border-white/10 bg-white/5 p-0.5 text-xs font-medium">
-            {(["search", "deals"] as const).map((v) => (
+            {(["search", "deals", "cases"] as const).map((v) => (
               <button
                 key={v}
-                onClick={() => { setView(v); if (v === "deals") setSel(null); }}
+                onClick={() => { setView(v); if (v !== "search") setSel(null); }}
                 className={`rounded-md px-2.5 py-1.5 transition ${
-                  (v === "deals" ? view === "deals" : view === "search")
+                  view === v
                     ? "bg-emerald-500/20 text-emerald-300"
                     : "text-slate-400 hover:text-slate-200"
                 }`}
               >
-                {v === "search" ? "Search" : "Deal Room"}
+                {v === "search" ? "Search" : v === "deals" ? "Deal Room" : "Case Prep"}
               </button>
             ))}
           </div>
@@ -114,6 +115,8 @@ export default function Home() {
       <main className="mx-auto max-w-6xl px-4 pb-20">
         {view === "deals" && !sel ? (
           <DealRoom onOpen={openCompany} />
+        ) : view === "cases" && !sel ? (
+          <CasePrep />
         ) : !sel ? (
           /* ── Landing / hero ── */
           <div className="flex min-h-[80vh] flex-col items-center justify-center py-16 text-center">
@@ -145,12 +148,18 @@ export default function Home() {
                 </button>
               ))}
             </div>
-            <div className="mt-8">
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
               <button
                 onClick={() => setView("deals")}
                 className="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-6 py-2.5 text-sm font-medium text-emerald-300 transition hover:bg-emerald-500/20"
               >
                 Visit the Deal Room — the M&amp;A tea: done deals, live situations &amp; legendary fumbles
+              </button>
+              <button
+                onClick={() => setView("cases")}
+                className="rounded-full border border-sky-400/40 bg-sky-500/10 px-6 py-2.5 text-sm font-medium text-sky-300 transition hover:bg-sky-500/20"
+              >
+                Case Prep — frameworks &amp; practice cases for the consulting grind
               </button>
             </div>
             <div className="mt-16 grid w-full grid-cols-1 gap-4 sm:grid-cols-3">
