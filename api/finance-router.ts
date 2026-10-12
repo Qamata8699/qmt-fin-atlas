@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createRouter, publicQuery } from "./middleware";
 import { edgarSearch, edgarOverview, edgarDcf, edgarOwnership, edgarNews } from "./edgar";
 import { searchDirectory } from "./jse-directory";
+import { mansaAvailable, mansaOverview } from "./mansa";
 
 const isUsTicker = (s: string) => !s.includes(".");
 
@@ -195,8 +196,18 @@ export const financeRouter = createRouter({
       overviewCache.set(input.symbol.toUpperCase(), { at: Date.now(), data: result });
       return result;
     } catch (e) {
-      // Yahoo rate-limit resilience: serve the last good fetch, whatever its age,
-      // rather than showing the user an error wall.
+      // Fallback chain when Yahoo fails:
+      // 1) Mansa API for JSE tickers (live price, market cap, sector — partial profile)
+      if (mansaAvailable(input.symbol)) {
+        try {
+          const m = await mansaOverview(input.symbol);
+          overviewCache.set(input.symbol.toUpperCase(), { at: Date.now(), data: m });
+          return m;
+        } catch {
+          /* Mansa down too — try the local snapshot cache */
+        }
+      }
+      // 2) Last good fetch from this server, whatever its age, over an error wall.
       const hit = overviewCache.get(input.symbol.toUpperCase());
       if (hit) return { ...hit.data, source: "cached snapshot (live feed rate-limited)" };
       throw e;
