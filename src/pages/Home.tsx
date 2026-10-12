@@ -7,6 +7,7 @@ import DcfTab from "@/components/DcfTab";
 import NewsTab from "@/components/NewsTab";
 import OwnershipTab from "@/components/OwnershipTab";
 import SaFlag from "@/components/SaFlag";
+import DealRoom from "@/components/DealRoom";
 import { fmtMoney, fmtNum } from "@/lib/format";
 
 const TABS = ["Overview", "DCF Benchmark", "M&A News", "Ownership"] as const;
@@ -22,6 +23,13 @@ export default function Home() {
   const [sel, setSel] = useState<{ symbol: string; name: string } | null>(null);
   const [tab, setTab] = useState<(typeof TABS)[number]>("Overview");
   const [zar, setZar] = useState(true);
+  const [view, setView] = useState<"search" | "deals">("search");
+
+  const openCompany = (symbol: string, name: string) => {
+    setSel({ symbol, name });
+    setTab("Overview");
+    setView("search");
+  };
 
   const fx = trpc.finance.fx.useQuery(undefined, { staleTime: 30 * 60 * 1000 });
 
@@ -51,7 +59,7 @@ export default function Home() {
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-          <button onClick={() => setSel(null)} className="flex items-center gap-2.5">
+          <button onClick={() => { setSel(null); setView("search"); }} className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/15">
               <TrendingUp className="h-5 w-5 text-emerald-400" />
             </div>
@@ -65,6 +73,21 @@ export default function Home() {
               </div>
             </div>
           </button>
+          <div className="flex items-center rounded-lg border border-white/10 bg-white/5 p-0.5 text-xs font-medium">
+            {(["search", "deals"] as const).map((v) => (
+              <button
+                key={v}
+                onClick={() => { setView(v); if (v === "deals") setSel(null); }}
+                className={`rounded-md px-2.5 py-1.5 transition ${
+                  (v === "deals" ? view === "deals" : view === "search")
+                    ? "bg-emerald-500/20 text-emerald-300"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                {v === "search" ? "Search" : "Deal Room"}
+              </button>
+            ))}
+          </div>
           {sel && (
             <div className="flex items-center rounded-lg border border-white/10 bg-white/5 p-0.5 text-xs font-medium">
               {([false, true] as const).map((v) => (
@@ -82,14 +105,16 @@ export default function Home() {
           )}
           {sel && (
             <div className="hidden sm:block">
-              <SearchBar onSelect={(symbol, name) => { setSel({ symbol, name }); setTab("Overview"); }} />
+              <SearchBar onSelect={openCompany} />
             </div>
           )}
         </div>
       </header>
 
       <main className="mx-auto max-w-6xl px-4 pb-20">
-        {!sel ? (
+        {view === "deals" && !sel ? (
+          <DealRoom onOpen={openCompany} />
+        ) : !sel ? (
           /* ── Landing / hero ── */
           <div className="flex min-h-[80vh] flex-col items-center justify-center py-16 text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500/5 px-4 py-1.5 text-xs font-medium text-emerald-300">
@@ -106,18 +131,26 @@ export default function Home() {
               beneficial-ownership maps — in one search.
             </p>
             <div className="mt-9 flex w-full justify-center px-2">
-              <SearchBar large onSelect={(symbol, name) => setSel({ symbol, name })} />
+              <SearchBar large onSelect={openCompany} />
             </div>
             <div className="mt-6 flex flex-wrap justify-center gap-2">
               {EXAMPLES.map((e) => (
                 <button
                   key={e.symbol}
-                  onClick={() => setSel({ symbol: e.symbol, name: e.label.split(" · ")[0] })}
+                  onClick={() => openCompany(e.symbol, e.label.split(" · ")[0])}
                   className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs text-slate-300 transition hover:border-emerald-400/40 hover:text-emerald-300"
                 >
                   {e.label}
                 </button>
               ))}
+            </div>
+            <div className="mt-8">
+              <button
+                onClick={() => setView("deals")}
+                className="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-6 py-2.5 text-sm font-medium text-emerald-300 transition hover:bg-emerald-500/20"
+              >
+                Visit the Deal Room — storyboards of M&amp;A wins, near-misses &amp; live situations
+              </button>
             </div>
             <div className="mt-16 grid w-full grid-cols-1 gap-4 sm:grid-cols-3">
               {[
@@ -137,7 +170,7 @@ export default function Home() {
           /* ── Company view ── */
           <div className="pt-6">
             <div className="sm:hidden">
-              <SearchBar onSelect={(symbol, name) => { setSel({ symbol, name }); setTab("Overview"); }} />
+              <SearchBar onSelect={openCompany} />
             </div>
 
             {overview.isLoading && (
