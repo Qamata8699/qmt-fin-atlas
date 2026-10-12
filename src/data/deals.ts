@@ -790,6 +790,37 @@ export const DEALS: Deal[] = [
     lesson: "If the returns look too smooth and the structure too complex to explain, it usually is.",
     flag: "ZA",
   },
+  {
+    id: "access-bank-rollup",
+    title: "Access Bank: from 65th in Nigeria to Africa's biggest bank by customers",
+    acquirer: "Access Bank (Wigwe & Aig-Imoukhuede era)",
+    target: "Intercontinental (2012) → Diamond Bank (2019) → Bidvest Bank SA (2025) + 12 more",
+    value: "$235m for Diamond Bank · R2.8bn for Bidvest Bank",
+    valueUsdBn: 0.235,
+    announced: "2005 → ongoing roll-up",
+    status: "completed",
+    statusNote: "Done (and still rolling) — 60m+ customers across ~20 countries",
+    sector: "Banking",
+    story:
+      "In 2002, Aigboje Aig-Imoukhuede and Herbert Wigwe took over Nigeria's 65th-ranked bank and said 'top 10 by 2007.' They did it with a conveyor belt of deals: Capital Bank and Marina Bank (2005, integrated in 60 days), then the big one — Intercontinental Bank in 2012, which jumped Access into Nigeria's top 5 and was judged Africa's top M&A deal of the year. The crown jewel came in April 2019: absorbing Diamond Bank for $235m, creating Africa's largest bank by customer base (29m Diamond customers alone). Then they went continental: Standard Chartered's subsidiaries in Angola, Cameroon, Gambia and Sierra Leone, banks in Mozambique, Zambia, Kenya, Botswana — and in December 2024 they agreed to buy SA's own Bidvest Bank for R2.8bn, closing 2025. A Nigerian bank now owns a Joburg bank. Tragically, Wigwe died in a helicopter crash in Feb 2024, but the machine he built kept rolling.",
+    lesson: "A clear rank-and-roll strategy, executed deal by deal for 20 years, beats any single big bang.",
+  },
+  {
+    id: "gm-chevrolet-saga",
+    title: "Chevrolet was founded to win back GM — then GM went bankrupt anyway",
+    acquirer: "Billy Durant → (bankers) → US Government",
+    target: "General Motors (home of Chevrolet)",
+    value: "1916 reverse takeover · $50bn bailout (2009)",
+    valueUsdBn: 50,
+    announced: "1911–1916 · bankruptcy 2009",
+    status: "completed",
+    statusNote: "Done — government exited by Dec 2013 at a $10.5bn loss",
+    sector: "Autos",
+    story:
+      "Billy Durant founded General Motors in 1908 and lost it to bankers in 1910. His comeback plan? Start a new car company with Swiss racing driver Louis Chevrolet (1911), make it a hit, and quietly trade Chevrolet stock for GM stock until — at a 1916 board meeting — he announced Chevrolet now controlled GM. Greatest boardroom heist in auto history. The sad subplot: Louis himself clashed with Durant over cheap cars, sold his shares in 1914 before they exploded in value, and died working in a Chevy plant — a million-dollar name on the grille, cents in his pocket. Epilogue: in 2009 GM went bankrupt anyway — $82bn of assets vs $172bn of debt — and the US Treasury took 60.8% of the 'New GM' for a $50bn rescue. Uncle Sam was literally Chevrolet's majority owner for four years, exiting in 2013 at a $10.5bn loss. GM trades on the NYSE today (ticker GM) — search it in the app.",
+    lesson: "Brands outlive founders, bailouts outlive balance sheets. The grille always survives.",
+    acquirerTicker: "GM",
+  },
   // ─── WIKIPEDIA HALL OF FAME ───
   {
     id: "vodafone-mannesmann",
