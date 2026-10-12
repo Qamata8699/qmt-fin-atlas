@@ -16,10 +16,11 @@ function DealCard({ deal, onOpen }: { deal: Deal; onOpen: (symbol: string, name:
     <article className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition hover:border-white/25">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="font-semibold text-slate-100">{deal.acquirer}</span>
+          <h4 className="font-bold leading-snug text-slate-100">{deal.title}</h4>
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+            <span className="text-slate-300">{deal.acquirer}</span>
             <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-slate-500" />
-            <span className="font-semibold text-slate-100">{deal.target}</span>
+            <span className="text-slate-300">{deal.target}</span>
             {deal.flag === "ZA" && <SaFlag className="h-3 w-[18px] rounded-[2px]" />}
           </div>
           <div className="mt-1 text-xs text-slate-500">
@@ -76,7 +77,7 @@ export default function DealRoom({ onOpen }: { onOpen: (symbol: string, name: st
     return DEALS.filter((d) => filter === "all" || d.status === filter).filter(
       (d) =>
         !needle ||
-        [d.acquirer, d.target, d.sector, d.story, d.value, d.announced]
+        [d.title, d.acquirer, d.target, d.sector, d.story, d.value, d.announced]
           .join(" ")
           .toLowerCase()
           .includes(needle)
@@ -97,9 +98,9 @@ export default function DealRoom({ onOpen }: { onOpen: (symbol: string, name: st
             The <span className="bg-gradient-to-r from-emerald-400 to-sky-400 bg-clip-text text-transparent">Deal Room</span>
           </h2>
           <p className="mt-2 max-w-2xl text-sm text-slate-400">
-            Storyboards of the deals that happened, the ones still in play, and the ones that got
-            away — from Yahoo twice passing on Google to MTN's on-again pursuit of Telkom. Tap a
-            ticker on any card to open the live company profile.
+            Storyboards of the deals that happened, the ones still cooking, and the ones that got
+            completely fumbled — from Yahoo passing on Google (twice) to MTN circling Telkom like a
+            hawk. Tap a ticker on any card to open the live company profile.
           </p>
         </div>
       </div>
@@ -110,7 +111,7 @@ export default function DealRoom({ onOpen }: { onOpen: (symbol: string, name: st
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search deals — e.g. Zuckerberg, Nvidia, MTN, Twitter…"
+            placeholder="Search the tea — e.g. Zuck, Nokia, MTN, BlackBerry…"
             className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-3 pl-10 pr-4 text-sm outline-none placeholder:text-slate-500 focus:border-emerald-400/50"
           />
         </div>
