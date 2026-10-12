@@ -2,7 +2,7 @@ import { z } from "zod";
 import { createRouter, publicQuery } from "./middleware";
 import { edgarSearch, edgarOverview, edgarDcf, edgarOwnership, edgarNews } from "./edgar";
 import { searchDirectory } from "./jse-directory";
-import { mansaAvailable, mansaOverview } from "./mansa";
+import { mansaAvailable, mansaOverview, mansaSearch } from "./mansa";
 
 const isUsTicker = (s: string) => !s.includes(".");
 
@@ -112,14 +112,24 @@ export const financeRouter = createRouter({
           type: q.quoteType as string,
         }));
     } catch {
-      /* Yahoo unavailable — local directory + EDGAR fallback below */
+      /* Yahoo unavailable — local directory + Mansa/EDGAR fallbacks below */
+    }
+    // Mansa covers JSE listings the local directory may not know yet (e.g. new IPOs).
+    let mansa: any[] = [];
+    if (mansaAvailable("X.JO")) {
+      try {
+        const seen = new Set([...local, ...yahoo].map((r) => r.symbol));
+        mansa = (await mansaSearch(input.q)).filter((r) => !seen.has(r.symbol));
+      } catch {
+        /* Mansa unavailable */
+      }
     }
     try {
       const edgar = await edgarSearch(input.q);
-      const seen = new Set([...local, ...yahoo].map((r) => r.symbol));
-      return [...local, ...yahoo, ...edgar.filter((r) => !seen.has(r.symbol))].slice(0, 12);
+      const seen = new Set([...local, ...yahoo, ...mansa].map((r) => r.symbol));
+      return [...local, ...yahoo, ...mansa, ...edgar.filter((r) => !seen.has(r.symbol))].slice(0, 12);
     } catch {
-      return [...local, ...yahoo];
+      return [...local, ...yahoo, ...mansa];
     }
   }),
 
