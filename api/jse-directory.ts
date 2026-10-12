@@ -11,7 +11,8 @@ export interface DirEntry {
 
 export const JSE_DIRECTORY: DirEntry[] = [
   { symbol: "SHP.JO", name: "Shoprite Holdings Ltd", exchange: "JSE", aliases: ["shoprite", "checkers", "usave"] },
-  { symbol: "PIK.JO", name: "Pick n Pay Stores Ltd", exchange: "JSE", aliases: ["pick n pay", "picknpay", "pnp", "boxer"] },
+  { symbol: "PIK.JO", name: "Pick n Pay Stores Ltd", exchange: "JSE", aliases: ["pick n pay", "picknpay", "pnp"] },
+  { symbol: "BOX.JO", name: "Boxer Retail Ltd", exchange: "JSE", aliases: ["boxer", "boxer superstores"] },
   { symbol: "SPP.JO", name: "The Spar Group Ltd", exchange: "JSE", aliases: ["spar"] },
   { symbol: "WHL.JO", name: "Woolworths Holdings Ltd", exchange: "JSE", aliases: ["woolworths", "woolies"] },
   { symbol: "TFG.JO", name: "The Foschini Group Ltd", exchange: "JSE", aliases: ["foschini", "tfg"] },
