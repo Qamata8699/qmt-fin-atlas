@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createRouter, publicQuery } from "./middleware";
 import { edgarSearch, edgarOverview, edgarDcf, edgarOwnership, edgarNews } from "./edgar";
+import { searchDirectory } from "./jse-directory";
 
 const isUsTicker = (s: string) => !s.includes(".");
 
@@ -26,6 +27,8 @@ const YF1 = "https://query1.finance.yahoo.com";
 const YF2 = "https://query2.finance.yahoo.com";
 
 let cached: { cookie: string; crumb: string; at: number } | null = null;
+
+const overviewCache = new Map<string, { at: number; data: any }>();
 
 async function getAuth(force = false): Promise<{ cookie: string; crumb: string }> {
   if (!force && cached && Date.now() - cached.at < 25 * 60 * 1000) return cached;
@@ -75,11 +78,23 @@ function normalizeExchange(exch: string | undefined): string {
   return exch;
 }
 
+// Yahoo quotes JSE prices in cents (ZAc) and LSE prices in pence (GBp),
+// while market cap & financials are in the major unit (ZAR / GBP).
+// Normalise price-level fields so everything downstream is one currency.
+const isCents = (cur: string | undefined) => cur === "ZAc" || cur === "GBp";
+const normCur = (cur: string | undefined) =>
+  cur === "ZAc" ? "ZAR" : cur === "GBp" ? "GBP" : cur ?? "USD";
+const normPrice = (v: number | null, cur: string | undefined) =>
+  v != null && isCents(cur) ? v / 100 : v;
+
 const MA_KEYWORDS =
   /merger|acqui|takeover|buyout|bids?|deal|m&a|combine|consolidat|sell-off|divest|spin-?off|stake/i;
 
 export const financeRouter = createRouter({
   search: publicQuery.input(z.object({ q: z.string().min(1) })).query(async ({ input }) => {
+    // Local JSE directory first — guarantees SA companies are always findable,
+    // even when Yahoo's free search ignores .JO tickers or is rate-limited.
+    const local = searchDirectory(input.q);
     let yahoo: any[] = [];
     try {
       const data = await yf(
@@ -96,19 +111,20 @@ export const financeRouter = createRouter({
           type: q.quoteType as string,
         }));
     } catch {
-      /* Yahoo unavailable — EDGAR fallback below */
+      /* Yahoo unavailable — local directory + EDGAR fallback below */
     }
     try {
       const edgar = await edgarSearch(input.q);
-      const seen = new Set(yahoo.map((r) => r.symbol));
-      return [...yahoo, ...edgar.filter((r) => !seen.has(r.symbol))].slice(0, 12);
+      const seen = new Set([...local, ...yahoo].map((r) => r.symbol));
+      return [...local, ...yahoo, ...edgar.filter((r) => !seen.has(r.symbol))].slice(0, 12);
     } catch {
-      return yahoo;
+      return [...local, ...yahoo];
     }
   }),
 
-  overview: publicQuery.input(z.object({ symbol: z.string() })).query(({ input }) =>
-    withEdgarFallback(input.symbol, async () => {
+  overview: publicQuery.input(z.object({ symbol: z.string() })).query(async ({ input }) => {
+    try {
+      const result = await withEdgarFallback(input.symbol, async () => {
     const modules =
       "price,summaryDetail,financialData,defaultKeyStatistics,incomeStatementHistory,balanceSheetHistory,cashflowStatementHistory,majorHoldersBreakdown";
     const data = await yf(
@@ -134,8 +150,8 @@ export const financeRouter = createRouter({
       symbol: input.symbol,
       name: p.longName ?? p.shortName ?? input.symbol,
       exchange: normalizeExchange(p.exchangeName),
-      currency: p.currency ?? "USD",
-      price: num(p.regularMarketPrice),
+      currency: normCur(p.currency),
+      price: normPrice(num(p.regularMarketPrice), p.currency),
       marketCap: num(p.marketCap),
       profitability: {
         grossMargin: num(fd.grossMargins),
@@ -175,8 +191,17 @@ export const financeRouter = createRouter({
       website: p.website ?? null,
       longBusinessSummary: p.longBusinessSummary ?? null,
     };
-    }, () => edgarOverview(input.symbol))
-  ),
+    }, () => edgarOverview(input.symbol));
+      overviewCache.set(input.symbol.toUpperCase(), { at: Date.now(), data: result });
+      return result;
+    } catch (e) {
+      // Yahoo rate-limit resilience: serve the last good fetch, whatever its age,
+      // rather than showing the user an error wall.
+      const hit = overviewCache.get(input.symbol.toUpperCase());
+      if (hit) return { ...hit.data, source: "cached snapshot (live feed rate-limited)" };
+      throw e;
+    }
+  }),
 
   ownership: publicQuery.input(z.object({ symbol: z.string() })).query(({ input }) =>
     withEdgarFallback(input.symbol, async () => {
@@ -275,8 +300,8 @@ export const financeRouter = createRouter({
     if (!baseFcf || !shares) {
       return {
         symbol: input.symbol,
-        currency: r.price?.currency ?? "USD",
-        price,
+        currency: normCur(r.price?.currency),
+        price: normPrice(price, r.price?.currency),
         baseFcf,
         growthRate,
         terminalGrowth,
@@ -306,15 +331,15 @@ export const financeRouter = createRouter({
     const perShare = equityValue / shares;
     return {
       symbol: input.symbol,
-      currency: r.price?.currency ?? "USD",
-      price,
+      currency: normCur(r.price?.currency),
+      price: normPrice(price, r.price?.currency),
       baseFcf,
       growthRate,
       terminalGrowth,
       discountRate,
       projectionYears: years,
       intrinsicValuePerShare: perShare,
-      upsidePct: price ? perShare / price - 1 : null,
+      upsidePct: price ? perShare / normPrice(price, r.price?.currency)! - 1 : null,
       projectedFcf: projected,
       terminalValuePv: tvPv,
       assumptionsNote:
