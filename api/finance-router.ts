@@ -3,6 +3,7 @@ import { createRouter, publicQuery } from "./middleware";
 import { edgarSearch, edgarOverview, edgarDcf, edgarOwnership, edgarNews } from "./edgar";
 import { searchDirectory } from "./jse-directory";
 import { mansaAvailable, mansaOverview, mansaSearch } from "./mansa";
+import { twelveDataAvailable, twelveDataOverview, twelveDataSearch } from "./twelvedata";
 
 const isUsTicker = (s: string) => !s.includes(".");
 
@@ -124,12 +125,22 @@ export const financeRouter = createRouter({
         /* Mansa unavailable */
       }
     }
+    // Twelve Data — dormant until a key is set (TWELVE_DATA_KEY env var).
+    let twelve: any[] = [];
+    if (twelveDataAvailable()) {
+      try {
+        const seen = new Set([...local, ...yahoo, ...mansa].map((r) => r.symbol));
+        twelve = (await twelveDataSearch(input.q)).filter((r) => !seen.has(r.symbol));
+      } catch {
+        /* Twelve Data unavailable */
+      }
+    }
     try {
       const edgar = await edgarSearch(input.q);
-      const seen = new Set([...local, ...yahoo, ...mansa].map((r) => r.symbol));
-      return [...local, ...yahoo, ...mansa, ...edgar.filter((r) => !seen.has(r.symbol))].slice(0, 12);
+      const seen = new Set([...local, ...yahoo, ...mansa, ...twelve].map((r) => r.symbol));
+      return [...local, ...yahoo, ...mansa, ...twelve, ...edgar.filter((r) => !seen.has(r.symbol))].slice(0, 12);
     } catch {
-      return [...local, ...yahoo, ...mansa];
+      return [...local, ...yahoo, ...mansa, ...twelve];
     }
   }),
 
@@ -214,10 +225,20 @@ export const financeRouter = createRouter({
           overviewCache.set(input.symbol.toUpperCase(), { at: Date.now(), data: m });
           return m;
         } catch {
-          /* Mansa down too — try the local snapshot cache */
+          /* Mansa down too — try Twelve Data */
         }
       }
-      // 2) Last good fetch from this server, whatever its age, over an error wall.
+      // 2) Twelve Data for any market — dormant until a key is set.
+      if (twelveDataAvailable()) {
+        try {
+          const t = await twelveDataOverview(input.symbol);
+          overviewCache.set(input.symbol.toUpperCase(), { at: Date.now(), data: t });
+          return t;
+        } catch {
+          /* Twelve Data down too — try the local snapshot cache */
+        }
+      }
+      // 3) Last good fetch from this server, whatever its age, over an error wall.
       const hit = overviewCache.get(input.symbol.toUpperCase());
       if (hit) return { ...hit.data, source: "cached snapshot (live feed rate-limited)" };
       throw e;
