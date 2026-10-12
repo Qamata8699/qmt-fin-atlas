@@ -1,0 +1,504 @@
+{
+ "generatedAt": "2026-10-13",
+ "note": "Annual fundamentals harvested from Yahoo Finance via agent backend. ZAR major units.",
+ "companies": {
+  "SHP.JO": {
+   "asOf": "2026-06-30",
+   "profitability": {
+    "grossMargin": 0.24539562367279105,
+    "operatingMargin": 0.05653402271258425,
+    "profitMargin": 0.029341704367094452,
+    "returnOnEquity": 0.23579865851486911,
+    "returnOnAssets": 0.0607466988814044,
+    "ebitda": 26345000000.0
+   },
+   "cashPosition": {
+    "totalCash": 12959000000.0,
+    "totalDebt": 55958000000.0,
+    "freeCashflow": 9203000000.0,
+    "operatingCashflow": 16019000000.0,
+    "currentRatio": 1.1950568651121418,
+    "quickRatio": 0.5234555350827033,
+    "cashPerShare": 23.963329607734256
+   },
+   "revenue": {
+    "totalRevenue": 270775000000.0,
+    "revenueGrowth": 0.07152326267011211,
+    "revenuePerShare": 500.7076606631872,
+    "history": [
+     {
+      "date": "2026-06-30",
+      "value": 270775000000.0
+     },
+     {
+      "date": "2025-06-30",
+      "value": 252701000000.0
+     },
+     {
+      "date": "2024-06-30",
+      "value": 232088000000.0
+     },
+     {
+      "date": "2023-06-30",
+      "value": 214956000000.0
+     }
+    ],
+    "netIncomeHistory": [
+     {
+      "date": "2026-06-30",
+      "value": 7945000000.0
+     },
+     {
+      "date": "2025-06-30",
+      "value": 7585000000.0
+     },
+     {
+      "date": "2024-06-30",
+      "value": 6248000000.0
+     },
+     {
+      "date": "2023-06-30",
+      "value": 5886000000.0
+     }
+    ]
+   },
+   "cashHistory": [
+    {
+     "date": "2026-06-30",
+     "value": 12959000000.0
+    },
+    {
+     "date": "2025-06-30",
+     "value": 9946000000.0
+    },
+    {
+     "date": "2024-06-30",
+     "value": 11732000000.0
+    },
+    {
+     "date": "2023-06-30",
+     "value": 12548000000.0
+    }
+   ],
+   "fcfHistory": [
+    {
+     "date": "2026-06-30",
+     "value": 9203000000.0
+    },
+    {
+     "date": "2025-06-30",
+     "value": 2985000000.0
+    },
+    {
+     "date": "2024-06-30",
+     "value": 6111000000.0
+    },
+    {
+     "date": "2023-06-30",
+     "value": 3122000000.0
+    }
+   ],
+   "holdersSummary": {
+    "insiders": 0.12416001,
+    "institutions": 0.57423997,
+    "floatInstitutions": 0.65564
+   },
+   "sharesOutstanding": 540784616.0
+  },
+  "PIK.JO": {
+   "asOf": "2026-02-28",
+   "profitability": {
+    "grossMargin": 0.1880289300856264,
+    "operatingMargin": -0.009784687006401198,
+    "profitMargin": -0.006052040901155541,
+    "returnOnEquity": -0.07613469985358712,
+    "returnOnAssets": -0.01600105501461635,
+    "ebitda": 5655000000.0
+   },
+   "cashPosition": {
+    "totalCash": 3277000000.0,
+    "totalDebt": 18735000000.0,
+    "freeCashflow": 1163000000.0,
+    "operatingCashflow": 3157000000.0,
+    "currentRatio": 1.0290282770832215,
+    "quickRatio": 0.3994741642968289,
+    "cashPerShare": 4.462247299698008
+   },
+   "revenue": {
+    "totalRevenue": 120290000000.0,
+    "revenueGrowth": 0.01042427907836263,
+    "revenuePerShare": 163.79729254826773,
+    "history": [
+     {
+      "date": "2026-02-28",
+      "value": 120290000000.0
+     },
+     {
+      "date": "2025-02-28",
+      "value": 119049000000.0
+     },
+     {
+      "date": "2024-02-29",
+      "value": 112295000000.0
+     },
+     {
+      "date": "2023-02-28",
+      "value": 106561800000.0
+     }
+    ],
+    "netIncomeHistory": [
+     {
+      "date": "2026-02-28",
+      "value": -728000000.0
+     },
+     {
+      "date": "2025-02-28",
+      "value": -736000000.0
+     },
+     {
+      "date": "2024-02-29",
+      "value": -3301000000.0
+     },
+     {
+      "date": "2023-02-28",
+      "value": 1169900000.0
+     }
+    ]
+   },
+   "cashHistory": [
+    {
+     "date": "2026-02-28",
+     "value": 3277000000.0
+    },
+    {
+     "date": "2025-02-28",
+     "value": 5328000000.0
+    },
+    {
+     "date": "2024-02-29",
+     "value": 5383000000.0
+    },
+    {
+     "date": "2023-02-28",
+     "value": 1998000000.0
+    }
+   ],
+   "fcfHistory": [
+    {
+     "date": "2026-02-28",
+     "value": 1163000000.0
+    },
+    {
+     "date": "2025-02-28",
+     "value": 465000000.0
+    },
+    {
+     "date": "2024-02-29",
+    "value": -963000000.0
+    },
+    {
+     "date": "2023-02-28",
+     "value": -916300000.0
+    }
+   ],
+   "holdersSummary": {
+    "insiders": 0.28183,
+    "institutions": 0.76539004,
+    "floatInstitutions": 1.06575
+   },
+   "sharesOutstanding": 734383323.0
+  },
+  "BOX.JO": {
+   "asOf": "2026-02-28",
+   "profitability": {
+    "grossMargin": 0.21575767961955358,
+    "operatingMargin": 0.05651000385587593,
+    "profitMargin": 0.03333190523113834,
+    "returnOnEquity": 0.4679699248120301,
+    "returnOnAssets": 0.10887209627763784,
+    "ebitda": 4044000000.0
+   },
+   "cashPosition": {
+    "totalCash": 538000000.0,
+    "totalDebt": 5471000000.0,
+    "freeCashflow": 1471000000.0,
+    "operatingCashflow": 2488000000.0,
+    "currentRatio": 0.9163677861102054,
+    "quickRatio": 0.22073687642647538,
+    "cashPerShare": 1.1884684803137486
+   },
+   "revenue": {
+    "totalRevenue": 46682000000.0,
+    "revenueGrowth": 0.09589877221400567,
+    "revenuePerShare": 103.12283568402678,
+    "history": [
+     {
+      "date": "2026-02-28",
+      "value": 46682000000.0
+     },
+     {
+      "date": "2025-02-28",
+      "value": 42597000000.0
+     },
+     {
+      "date": "2024-02-29",
+      "value": 37419000000.0
+     },
+     {
+      "date": "2023-02-28",
+      "value": 31897000000.0
+     }
+    ],
+    "netIncomeHistory": [
+     {
+      "date": "2026-02-28",
+      "value": 1556000000.0
+     },
+     {
+      "date": "2025-02-28",
+      "value": 1383000000.0
+     },
+     {
+      "date": "2024-02-29",
+      "value": 1385000000.0
+     },
+     {
+      "date": "2023-02-28",
+      "value": 1104000000.0
+     }
+    ]
+   },
+   "cashHistory": [
+    {
+     "date": "2026-02-28",
+     "value": 538000000.0
+    },
+    {
+     "date": "2025-02-28",
+     "value": 466000000.0
+    },
+    {
+     "date": "2024-02-29",
+     "value": 349000000.0
+    },
+    {
+     "date": "2023-02-28",
+     "value": 345000000.0
+    }
+   ],
+   "fcfHistory": [
+    {
+     "date": "2026-02-28",
+     "value": 1471000000.0
+    },
+    {
+     "date": "2025-02-28",
+     "value": -7772000000.0
+    },
+    {
+     "date": "2024-02-29",
+     "value": 1751000000.0
+    },
+    {
+     "date": "2023-02-28",
+     "value": 294000000.0
+    }
+   ],
+   "holdersSummary": {
+    "insiders": 0.57787,
+    "institutions": 0.24628,
+    "floatInstitutions": 0.58342
+   },
+   "sharesOutstanding": 452683440.0
+  },
+  "SPP.JO": {
+   "asOf": "2025-09-30",
+   "profitability": {
+    "grossMargin": 0.107599630907889,
+    "operatingMargin": 0.018920915244979936,
+    "profitMargin": -0.03672740356783969,
+    "returnOnEquity": -0.9088530391732395,
+    "returnOnAssets": -0.10445594464901539,
+    "ebitda": 4195600000.0
+   },
+   "cashPosition": {
+    "totalCash": 2752600000.0,
+    "totalDebt": 16300900000.0,
+    "freeCashflow": 3377500000.0,
+    "operatingCashflow": 4285900000.0,
+    "currentRatio": 0.9873344976340812,
+    "quickRatio": 0.813693221679877,
+    "cashPerShare": 14.292934412545597
+   },
+   "revenue": {
+    "totalRevenue": 131457700000.0,
+    "revenueGrowth": 0.00359655109759327,
+    "revenuePerShare": 682.5969207745751,
+    "history": [
+     {
+      "date": "2025-09-30",
+      "value": 131457700000.0
+     },
+     {
+      "date": "2024-09-30",
+      "value": 130986600000.0
+     },
+     {
+      "date": "2023-09-30",
+      "value": 146461000000.0
+     },
+     {
+      "date": "2022-09-30",
+      "value": 135609100000.0
+     }
+    ],
+    "netIncomeHistory": [
+     {
+      "date": "2025-09-30",
+      "value": -4828100000.0
+     },
+     {
+      "date": "2024-09-30",
+      "value": 351900000.0
+     },
+     {
+      "date": "2023-09-30",
+      "value": 401300000.0
+     },
+     {
+      "date": "2022-09-30",
+      "value": 2152000000.0
+     }
+    ]
+   },
+   "cashHistory": [
+    {
+     "date": "2025-09-30",
+     "value": 2752600000.0
+    },
+    {
+     "date": "2024-09-30",
+     "value": 1622200000.0
+    },
+    {
+     "date": "2023-09-30",
+     "value": 1708000000.0
+    },
+    {
+     "date": "2022-09-30",
+     "value": 1112800000.0
+    }
+   ],
+   "fcfHistory": [
+    {
+     "date": "2025-09-30",
+     "value": 3377500000.0
+    },
+    {
+     "date": "2024-09-30",
+     "value": 2209100000.0
+    },
+    {
+     "date": "2023-09-30",
+     "value": 2352300000.0
+    },
+    {
+     "date": "2022-09-30",
+     "value": 660900000.0
+    }
+   ],
+   "holdersSummary": {
+    "insiders": 0.00013,
+    "institutions": 0.80069,
+    "floatInstitutions": 0.80079
+   },
+   "sharesOutstanding": 192584666.0
+  },
+  "WHL.JO": {
+   "asOf": "2026-06-30",
+   "profitability": {
+    "grossMargin": 0.3403628637993264,
+    "operatingMargin": 0.061153293658937,
+    "profitMargin": 0.027993384918096113,
+    "returnOnEquity": 0.22655334114888628,
+    "returnOnAssets": 0.05881308648237383,
+    "ebitda": 8474000000.0
+   },
+   "cashPosition": {
+    "totalCash": 3099000000.0,
+    "totalDebt": 18616000000.0,
+    "freeCashflow": null,
+    "operatingCashflow": null,
+    "currentRatio": 1.105642256902761,
+    "quickRatio": 0.4137369233407649,
+    "cashPerShare": 3.463644262592478
+   },
+   "revenue": {
+    "totalRevenue": 82841000000.0,
+    "revenueGrowth": 0.04154041515269613,
+    "revenuePerShare": 92.58849769519956,
+    "history": [
+     {
+      "date": "2026-06-30",
+      "value": 82841000000.0
+     },
+     {
+      "date": "2025-06-30",
+      "value": 79537000000.0
+     },
+     {
+      "date": "2024-06-30",
+      "value": 76533000000.0
+     },
+     {
+      "date": "2023-06-30",
+      "value": 72266000000.0
+     }
+    ],
+    "netIncomeHistory": [
+     {
+      "date": "2026-06-30",
+      "value": 2319000000.0
+     },
+     {
+      "date": "2025-06-30",
+      "value": 2443000000.0
+     },
+     {
+      "date": "2024-06-30",
+      "value": 2593000000.0
+     },
+     {
+      "date": "2023-06-30",
+      "value": 5074000000.0
+     }
+    ]
+   },
+   "cashHistory": [
+    {
+     "date": "2026-06-30",
+     "value": 3099000000.0
+    },
+    {
+     "date": "2025-06-30",
+     "value": 4291000000.0
+    },
+    {
+     "date": "2024-06-30",
+     "value": 2309000000.0
+    },
+    {
+     "date": "2023-06-30",
+     "value": 3577000000.0
+    }
+   ],
+   "fcfHistory": [],
+   "holdersSummary": {
+    "insiders": null,
+    "institutions": null,
+    "floatInstitutions": null
+   },
+   "sharesOutstanding": 894722369.0
+  }
+ }
+}
