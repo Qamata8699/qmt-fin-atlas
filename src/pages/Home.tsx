@@ -6,6 +6,7 @@ import OverviewTab from "@/components/OverviewTab";
 import DcfTab from "@/components/DcfTab";
 import NewsTab from "@/components/NewsTab";
 import OwnershipTab from "@/components/OwnershipTab";
+import SaFlag from "@/components/SaFlag";
 import { fmtMoney, fmtNum } from "@/lib/format";
 
 const TABS = ["Overview", "DCF Benchmark", "M&A News", "Ownership"] as const;
@@ -20,6 +21,9 @@ const EXAMPLES = [
 export default function Home() {
   const [sel, setSel] = useState<{ symbol: string; name: string } | null>(null);
   const [tab, setTab] = useState<(typeof TABS)[number]>("Overview");
+  const [zar, setZar] = useState(true);
+
+  const fx = trpc.finance.fx.useQuery(undefined, { staleTime: 30 * 60 * 1000 });
 
   const overview = trpc.finance.overview.useQuery(
     { symbol: sel?.symbol ?? "" },
@@ -39,6 +43,8 @@ export default function Home() {
   );
 
   const o = overview.data;
+  const rate = o && zar ? (fx.data?.rates?.[o.currency] ?? 1) : 1;
+  const cur = o ? (zar ? "ZAR" : o.currency) : "ZAR";
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
@@ -50,12 +56,30 @@ export default function Home() {
               <TrendingUp className="h-5 w-5 text-emerald-400" />
             </div>
             <div className="text-left">
-              <div className="text-sm font-bold tracking-wide">QMT FIN ATLAS</div>
+              <div className="flex items-center gap-1.5">
+                <div className="text-sm font-bold tracking-wide">QMT FIN ATLAS</div>
+                <SaFlag className="h-3 w-[18px] rounded-[2px] ring-1 ring-white/20" />
+              </div>
               <div className="text-[10px] uppercase tracking-widest text-slate-500">
                 NYSE · LSE · JSE intelligence
               </div>
             </div>
           </button>
+          {sel && (
+            <div className="flex items-center rounded-lg border border-white/10 bg-white/5 p-0.5 text-xs font-medium">
+              {([false, true] as const).map((v) => (
+                <button
+                  key={String(v)}
+                  onClick={() => setZar(v)}
+                  className={`rounded-md px-2.5 py-1.5 transition ${
+                    zar === v ? "bg-emerald-500/20 text-emerald-300" : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  {v ? "R ZAR" : "Local"}
+                </button>
+              ))}
+            </div>
+          )}
           {sel && (
             <div className="hidden sm:block">
               <SearchBar onSelect={(symbol, name) => { setSel({ symbol, name }); setTab("Overview"); }} />
@@ -66,7 +90,7 @@ export default function Home() {
 
       <main className="mx-auto max-w-6xl px-4 pb-20">
         {!sel ? (
-          /* -- Landing / hero -- */
+          /* ── Landing / hero ── */
           <div className="flex min-h-[80vh] flex-col items-center justify-center py-16 text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500/5 px-4 py-1.5 text-xs font-medium text-emerald-300">
               <Globe2 className="h-3.5 w-3.5" /> Three exchanges, one terminal
@@ -110,7 +134,7 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          /* -- Company view -- */
+          /* ── Company view ── */
           <div className="pt-6">
             <div className="sm:hidden">
               <SearchBar onSelect={(symbol, name) => { setSel({ symbol, name }); setTab("Overview"); }} />
@@ -153,10 +177,15 @@ export default function Home() {
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold">
-                      {o.price != null ? `${fmtNum(o.price)} ${o.currency}` : "—"}
+                      {o.price != null ? `${fmtNum(o.price * rate)} ${cur}` : "—"}
                     </div>
+                    {zar && o.currency !== "ZAR" && rate !== 1 && (
+                      <div className="text-xs text-emerald-400/80">
+                        1 {o.currency} ≈ R{rate.toFixed(2)}
+                      </div>
+                    )}
                     <div className="text-sm text-slate-500">
-                      Mkt cap {fmtMoney(o.marketCap, o.currency)}
+                      Mkt cap {fmtMoney(o.marketCap != null ? o.marketCap * rate : null, cur)}
                     </div>
                   </div>
                 </div>
@@ -181,12 +210,12 @@ export default function Home() {
                 </div>
 
                 <div className="mt-6">
-                  {tab === "Overview" && <OverviewTab data={o} />}
+                  {tab === "Overview" && <OverviewTab data={o} cur={cur} rate={rate} />}
                   {tab === "DCF Benchmark" &&
                     (dcf.isLoading ? (
                       <div className="h-64 animate-pulse rounded-xl bg-white/5" />
                     ) : dcf.data ? (
-                      <DcfTab dcf={dcf.data} />
+                      <DcfTab dcf={dcf.data} cur={cur} rate={rate} />
                     ) : (
                       <p className="text-sm text-slate-400">Unable to compute DCF right now.</p>
                     ))}
@@ -202,7 +231,7 @@ export default function Home() {
                     (ownership.isLoading ? (
                       <div className="h-64 animate-pulse rounded-xl bg-white/5" />
                     ) : ownership.data ? (
-                      <OwnershipTab data={ownership.data} symbol={o.symbol} currency={o.currency} />
+                      <OwnershipTab data={ownership.data} symbol={o.symbol} currency={cur} rate={rate} />
                     ) : (
                       <p className="text-sm text-slate-400">Unable to load ownership data right now.</p>
                     ))}
@@ -214,6 +243,10 @@ export default function Home() {
       </main>
 
       <footer className="border-t border-white/10 py-6 text-center text-xs text-slate-600">
+        <div className="mb-2 flex items-center justify-center gap-2">
+          <SaFlag className="h-3.5 w-[21px] rounded-[2px]" />
+          <span className="font-medium text-slate-500">Proudly South African — QMT, from QAMATA</span>
+        </div>
         QMT FIN ATLAS — data from free public feeds (Yahoo Finance), may be delayed or incomplete.
         Benchmark DCF is illustrative and not investment advice.
       </footer>

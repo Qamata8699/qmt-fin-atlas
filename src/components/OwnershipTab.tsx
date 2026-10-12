@@ -27,7 +27,7 @@ function CompanyNode({ data }: any) {
 
 const nodeTypes = { holder: HolderNode, company: CompanyNode };
 
-export default function OwnershipTab({ data, symbol, currency }: { data: any; symbol: string; currency: string }) {
+export default function OwnershipTab({ data, symbol, currency, rate = 1 }: { data: any; symbol: string; currency: string; rate?: number }) {
   const { nodes, edges } = useMemo(() => {
     const holders = (data.institutions ?? []).filter((h: any) => h.name);
     const centerY = Math.max(holders.length, 1) * 55;
@@ -42,7 +42,7 @@ export default function OwnershipTab({ data, symbol, currency }: { data: any; sy
         id: `h${i}`,
         type: "holder",
         position: { x: 0, y: 40 + i * 110 },
-        data: { name: h.name, pct: h.pctHeld, value: h.value, currency },
+        data: { name: h.name, pct: h.pctHeld, value: h.value != null ? h.value * rate : null, currency },
       })),
     ];
     const edges = holders.map((h: any, i: number) => ({
@@ -56,9 +56,10 @@ export default function OwnershipTab({ data, symbol, currency }: { data: any; sy
       labelBgStyle: { fill: "#0f172a" },
     }));
     return { nodes, edges };
-  }, [data, symbol, currency]);
+  }, [data, symbol, currency, rate]);
 
   const b = data.breakdown ?? {};
+  const M = (v: number | null | undefined) => fmtMoney(v == null ? v : v * rate, currency);
 
   return (
     <div className="space-y-6">
@@ -127,7 +128,7 @@ export default function OwnershipTab({ data, symbol, currency }: { data: any; sy
                   <tr key={i} className="border-b border-white/5 text-slate-300">
                     <td className="px-4 py-2.5">{f.name}</td>
                     <td className="px-4 py-2.5 text-right">{fmtPct(f.pctHeld)}</td>
-                    <td className="px-4 py-2.5 text-right">{fmtMoney(f.value, currency)}</td>
+                    <td className="px-4 py-2.5 text-right">{M(f.value)}</td>
                     <td className="px-4 py-2.5 text-right text-slate-500">{f.reportDate ?? "—"}</td>
                   </tr>
                 ))}
