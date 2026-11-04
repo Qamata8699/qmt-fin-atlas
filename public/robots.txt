@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://g5d4od6lkb5vk.kimi.pro/sitemap.xml
